@@ -1,5 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hospirent/constants.dart';
 import 'package:provider/provider.dart';
+import 'View/Auth/Login/login.dart';
+import 'View/Cart/cart.dart';
+import 'View/Demo/controller/cart_provider.dart';
+import 'View/Demo/view/cart/cart.dart';
+import 'View/Demo/view/drawer/drawer_menu.dart';
+import 'View/Demo/widgets/app_name_widget.dart';
+import 'View/Demo/widgets/text/text_builder.dart';
+import 'View/Home/home.dart';
+import 'View/Product/product.dart';
+import 'Widget/drawer.dart';
 
 void main() {
   runApp(MyApp());
@@ -8,18 +20,33 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => AuthProvider(),
-      child: MaterialApp(
-        title: 'Shopping App',
-        theme: ThemeData(primarySwatch: Colors.blue),
-        home: MainScreen(),
-        routes: {
-          '/login': (context) => LoginScreen(),
-        },
-      ),
+    return ScreenUtilInit(
+      designSize: const Size(360, 690),
+      minTextAdapt: true,
+      splitScreenMode: true,
+
+      // Use builder only if you need to use library outside ScreenUtilInit context
+      builder: (_ , child) {
+        return  MultiProvider(
+            providers: [
+            ChangeNotifierProvider<CartProvider>(create: (context) => CartProvider()),
+            ChangeNotifierProvider<AuthProvider>(create: (context) => AuthProvider()),
+        ],
+
+          child: MaterialApp(
+            title: 'Shopping App',
+            theme: ThemeData(primarySwatch: Colors.blue),
+            debugShowCheckedModeBanner: false,
+            home: MainScreen(),
+            routes: {
+              '/login': (context) => LoginScreen(),
+            },
+          ),
+        );
+      },
     );
   }
+
 }
 
 class AuthProvider with ChangeNotifier {
@@ -72,9 +99,60 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final cart = Provider.of<CartProvider>(context);
+
     return Scaffold(
-      appBar: AppBar(title: Text('Shopping App')),
-      drawer: AppDrawer(),
+      appBar:AppBar(
+        backgroundColor: AppColors.primary,
+        iconTheme: IconThemeData(color: Colors.white),
+        title: const AppNameWidget(),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(20.sp),
+            bottomRight: Radius.circular(20.sp),
+          ),
+        ),
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const Cart()));
+            },
+            icon: Stack(
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(top: cart.itemCount != 0 ? 8 : 0, right: cart.itemCount != 0 ? 8 : 0),
+                  child: const Icon(
+                    Icons.shopping_cart,
+                    color: Colors.white,
+                    size: 30,
+                  ),
+                ),
+                if (cart.itemCount != 0)
+                  Positioned(
+                    top: 0,
+                    right: 0,
+                    child: Container(
+                      height: 20,
+                      width: 20,
+                      alignment: Alignment.center,
+                      decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.black),
+                      child: TextBuilder(
+                        text: cart.itemCount.toString(),
+                        color: Colors.white,
+                        fontWeight: FontWeight.w400,
+                        fontSize: 10,
+                      ),
+                    ),
+                  )
+              ],
+            ),
+          )
+        ],
+
+      ),
+
+
+      drawer: const DrawerMenu(),
       body: _screens[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         items: const [
@@ -82,6 +160,7 @@ class _MainScreenState extends State<MainScreen> {
           BottomNavigationBarItem(icon: Icon(Icons.shop), label: 'Products'),
           BottomNavigationBarItem(icon: Icon(Icons.shopping_cart), label: 'Cart'),
         ],
+        backgroundColor: AppColors.primary,
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
       ),
@@ -89,152 +168,7 @@ class _MainScreenState extends State<MainScreen> {
   }
 }
 
-class AppDrawer extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context);
-    return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: [
-          DrawerHeader(
-            decoration: BoxDecoration(color: Colors.blue),
-            child: Text('Menu', style: TextStyle(color: Colors.white, fontSize: 24)),
-          ),
-          ListTile(
-            title: Text('Home'),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => MainScreen()));
-            },
-          ),
-          ListTile(
-            title: Text(authProvider.user == null ? 'Login' : 'Logout'),
-            onTap: () {
-              if (authProvider.user == null) {
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/login');
-              } else {
-                authProvider.logout();
-                Navigator.pop(context);
-              }
-            },
-          ),
-        ],
-      ),
-    );
-  }
-}
 
-class HomeScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(child: Text('Welcome to the Home Screen!'));
-  }
-}
 
-class ProductScreen extends StatelessWidget {
-  final List<String> products = ['Product 1', 'Product 2', 'Product 3'];
 
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: products.length,
-      itemBuilder: (context, index) {
-        return ListTile(
-          title: Text(products[index]),
-          trailing: IconButton(
-            icon: Icon(Icons.add_shopping_cart),
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('${products[index]} added to cart')),
-              );
-            },
-          ),
-        );
-      },
-    );
-  }
-}
 
-class CartScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context);
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text('Your Cart'),
-          ElevatedButton(
-            onPressed: () {
-              if (authProvider.user == null) {
-                authProvider.setRedirectRoute('/cart');
-                Navigator.pushNamed(context, '/login');
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Order placed successfully!')),
-                );
-              }
-            },
-            child: Text('Place Order'),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class LoginScreen extends StatefulWidget {
-  @override
-  _LoginScreenState createState() => _LoginScreenState();
-}
-
-class _LoginScreenState extends State<LoginScreen> {
-  final _usernameController = TextEditingController();
-  final _passwordController = TextEditingController();
-
-  void _login(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    bool success = authProvider.login(
-      _usernameController.text.trim(),
-      _passwordController.text.trim(),
-    );
-    if (success) {
-      final redirectRoute = authProvider.redirectRoute ?? '/';
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => MainScreen()));
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Login failed: Invalid credentials')),
-      );
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Login')),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: _usernameController,
-              decoration: InputDecoration(labelText: 'Username'),
-            ),
-            TextField(
-              controller: _passwordController,
-              decoration: InputDecoration(labelText: 'Password'),
-              obscureText: true,
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () => _login(context),
-              child: Text('Login'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
