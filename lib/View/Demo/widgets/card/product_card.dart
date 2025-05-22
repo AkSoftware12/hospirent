@@ -90,6 +90,39 @@ class ProductCard extends StatelessWidget {
                             ),
                           ],
                         ),
+                        // IconButton(
+                        //   splashColor: Colors.blue,
+                        //   tooltip: 'Add to cart',
+                        //   onPressed: () {
+                        //     // final ScaffoldMessengerState addToCartMsg = ScaffoldMessenger.of(context);
+                        //     // addToCartMsg.showSnackBar(
+                        //     //   SnackBar(
+                        //     //     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                        //     //     backgroundColor: Colors.black,
+                        //     //     action: SnackBarAction(
+                        //     //         label: 'Go to Cart',
+                        //     //         onPressed: () {
+                        //     //           Navigator.push(context, MaterialPageRoute(builder: (_) => const Cart(appBar: 'Hone',)));
+                        //     //         }),
+                        //     //     behavior: SnackBarBehavior.floating,
+                        //     //     content: const TextBuilder(text: 'Product added to cart'),
+                        //     //   ),
+                        //     // );
+                        //     CartModel cartModel = CartModel(
+                        //         id: product.id!,
+                        //         title: product.title!,
+                        //         price: product.price!,
+                        //         image: product.image!,
+                        //         category: product.category!,
+                        //         quantity: 1,
+                        //         totalPrice: product.price!);
+                        //     cart.addItem(cartModel);
+                        //     // cart.addItem(product.id.toString(), product.title!, product.price, product.image!, product.category!);
+                        //   },
+                        //   icon: const Icon(Icons.add_shopping_cart_rounded),
+                        //   color: Colors.blue,
+                        // ),
+
                         IconButton(
                           splashColor: Colors.blue,
                           tooltip: 'Add to cart',
@@ -100,24 +133,28 @@ class ProductCard extends StatelessWidget {
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                                 backgroundColor: Colors.black,
                                 action: SnackBarAction(
-                                    label: 'Go to Cart',
-                                    onPressed: () {
-                                      Navigator.push(context, MaterialPageRoute(builder: (_) => const Cart()));
-                                    }),
+                                  label: 'Go to Cart',
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (_) => const Cart(appBar: 'Hone')),
+                                    );
+                                  },
+                                ),
                                 behavior: SnackBarBehavior.floating,
                                 content: const TextBuilder(text: 'Product added to cart'),
                               ),
                             );
                             CartModel cartModel = CartModel(
-                                id: product.id!,
-                                title: product.title!,
-                                price: product.price!,
-                                image: product.image!,
-                                category: product.category!,
-                                quantity: 1,
-                                totalPrice: product.price!);
-                            cart.addItem(cartModel);
-                            // cart.addItem(product.id.toString(), product.title!, product.price, product.image!, product.category!);
+                              id: product.id!,
+                              title: product.title!,
+                              price: product.price!,
+                              image: product.image!,
+                              category: product.category!,
+                              quantity: 1,
+                              totalPrice: product.price!,
+                            );
+                            cart.addItem(cartModel); // This now handles duplicates and persists the cart
                           },
                           icon: const Icon(Icons.add_shopping_cart_rounded),
                           color: Colors.blue,

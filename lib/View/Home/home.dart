@@ -6,23 +6,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:hospirent/HexColor.dart';
 
-import '../../constants.dart';
-import '../Demo/controller/cart_provider.dart';
-import '../Demo/imports.dart';
 import '../Demo/view/home/home.dart';
-
-// // Assuming constants.dart defines AppColors
-// class AppColors {
-//   static const background = Color(0xFFF5F7FA); // Light grey background
-//   static const primary = Color(0xFF3B82F6); // Vibrant blue
-//   static const accent = Color(0xFFFF6B6B); // Coral accent
-//   static const cardBackground = Colors.white;
-//   static const gradient = LinearGradient(
-//     colors: [Color(0xFF3B82F6), Color(0xFF7C3AED)],
-//     begin: Alignment.topLeft,
-//     end: Alignment.bottomRight,
-//   );
-// }
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -33,470 +17,486 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
+  final _scrollController = ScrollController();
 
-  // Sample data for carousel images
+  // Banner data
   final List<Map<String, String>> bannerImages = [
-    {'url': 'https://hospirent.in/public//storage/photos/banner/banner111.png', 'title': 'Explore New Deals!'},
-    {'url': 'https://hospirent.in/public//storage/photos/banner/banner2.png', 'title': 'Shop Now!'},
-    {'url': 'https://hospirent.in/public//storage/photos/banner/banner3.png', 'title': 'Exclusive Offers!'},
+    {
+      'url': 'https://hospirent.in/public//storage/photos/banner/banner111.png',
+      'title': 'Explore New Deals!'
+    },
+    {
+      'url': 'https://hospirent.in/public//storage/photos/banner/banner2.png',
+      'title': 'Shop Now!'
+    },
+    {
+      'url': 'https://hospirent.in/public//storage/photos/banner/banner3.png',
+      'title': 'Exclusive Offers!'
+    },
   ];
 
-  // Sample categories
+  // Categories data
   final List<Map<String, dynamic>> categories = [
-    {'name': 'Oxygen Cylinders', 'icon': 'https://hospirent.in/public//storage/photos/products_category/oxygen-tube_7128867.png', 'semanticsLabel': 'Electronics', 'color': Colors.blue},
-    {'name': 'Wheelchairs', 'icon': 'https://hospirent.in/public//storage/photos/products_category/wheelchair_5255796.png', 'semanticsLabel': 'Fashion', 'color': Colors.pink},
-    {'name': 'Hospital Beds	', 'icon':'https://hospirent.in/public//storage/photos/products_category/hospital-bed_3209103.png', 'semanticsLabel': 'Home', 'color': Colors.green},
-    {'name': 'Medical & Surgical Products', 'icon':'https://hospirent.in/public//storage/photos/products_category/medical%20produt.png', 'semanticsLabel': 'Beauty', 'color': Colors.purple},
-    {'name': 'BiPAP Machines	', 'icon':'https://hospirent.in/public//storage/photos/products_category/Bipap%20Machine.png', 'semanticsLabel': 'Sports', 'color': Colors.orange},
-    {'name': 'Oxygen Concentrators	', 'icon': 'https://hospirent.in/public//storage/photos/products_category/freezer_2676740.png', 'semanticsLabel': 'Books', 'color': Colors.teal},
+    {
+      'name': 'Oxygen Cylinders',
+      'icon':
+      'https://hospirent.in/public//storage/photos/products_category/oxygen-tube_7128867.png',
+      'color': Colors.blue
+    },
+    {
+      'name': 'Wheelchairs',
+      'icon':
+      'https://hospirent.in/public//storage/photos/products_category/wheelchair_5255796.png',
+      'color': Colors.pink
+    },
+    {
+      'name': 'Hospital Beds',
+      'icon':
+      'https://hospirent.in/public//storage/photos/products_category/hospital-bed_3209103.png',
+      'color': Colors.green
+    },
+    {
+      'name': 'Medical & Surgical Products',
+      'icon':
+      'https://hospirent.in/public//storage/photos/products_category/medical%20produt.png',
+      'color': Colors.purple
+    },
+    {
+      'name': 'BiPAP Machines',
+      'icon':
+      'https://hospirent.in/public//storage/photos/products_category/Bipap%20Machine.png',
+      'color': Colors.orange
+    },
+    {
+      'name': 'Oxygen Concentrators',
+      'icon':
+      'https://hospirent.in/public//storage/photos/products_category/freezer_2676740.png',
+      'color': Colors.teal
+    },
   ];
 
+  // Services data
   final List<Map<String, dynamic>> services = [
-    {'name': 'X-ray At Home	', 'icon': 'https://hospirent.in/public//storage/icons/services/scan_3387759.png', 'semanticsLabel': 'Electronics', 'color': Colors.blue},
-    {'name': 'Dialysis At Home', 'icon': 'https://hospirent.in/public//storage/icons/services/human_10192287.png', 'semanticsLabel': 'Fashion', 'color': Colors.pink},
-    {'name': 'Home Nursing', 'icon':'https://hospirent.in/public//storage/icons/services/nurse_2719553.png', 'semanticsLabel': 'Home', 'color': Colors.green},
-    {'name': 'ECG At Home', 'icon':'https://hospirent.in/public//storage/icons/services/life-line_2875045.png', 'semanticsLabel': 'Beauty', 'color': Colors.purple},
-    {'name': 'ECG Holter', 'icon':'https://hospirent.in/public//storage/icons/services/ecgholter.png', 'semanticsLabel': 'Sports', 'color': Colors.orange},
-    {'name': 'Neurotherapy', 'icon': 'https://hospirent.in/public//storage/icons/services/neurotherapy.png', 'semanticsLabel': 'Books', 'color': Colors.teal},
-    {'name': 'Natural Therapy', 'icon': 'https://hospirent.in/public//storage/icons/services/naturaltherapy.png', 'semanticsLabel': 'Books', 'color': Colors.teal},
-    {'name': 'Rental Ambulance', 'icon': 'https://hospirent.in/public//storage/icons/services/ambulance.png', 'semanticsLabel': 'Books', 'color': Colors.teal},
-    {'name': 'Equipment Repairing	', 'icon': 'https://hospirent.in/public//storage/icons/services/equipment%20repairing.png', 'semanticsLabel': 'Books', 'color': Colors.teal},
-    {'name': 'Sleep Study', 'icon': 'https://hospirent.in/public//storage/icons/services/sleepstudy.png', 'semanticsLabel': 'Books', 'color': Colors.teal},
+    {
+      'name': 'X-ray At Home',
+      'icon':
+      'https://hospirent.in/public//storage/icons/services/scan_3387759.png',
+      'color': Colors.blue
+    },
+    {
+      'name': 'Dialysis At Home',
+      'icon':
+      'https://hospirent.in/public//storage/icons/services/human_10192287.png',
+      'color': Colors.pink
+    },
+    {
+      'name': 'Home Nursing',
+      'icon':
+      'https://hospirent.in/public//storage/icons/services/nurse_2719553.png',
+      'color': Colors.green
+    },
+    {
+      'name': 'ECG At Home',
+      'icon':
+      'https://hospirent.in/public//storage/icons/services/life-line_2875045.png',
+      'color': Colors.purple
+    },
+    {
+      'name': 'ECG Holter',
+      'icon':
+      'https://hospirent.in/public//storage/icons/services/ecgholter.png',
+      'color': Colors.orange
+    },
+    {
+      'name': 'Neurotherapy',
+      'icon':
+      'https://hospirent.in/public//storage/icons/services/neurotherapy.png',
+      'color': Colors.teal
+    },
+    {
+      'name': 'Natural Therapy',
+      'icon':
+      'https://hospirent.in/public//storage/icons/services/naturaltherapy.png',
+      'color': Colors.teal
+    },
+    {
+      'name': 'Rental Ambulance',
+      'icon':
+      'https://hospirent.in/public//storage/icons/services/ambulance.png',
+      'color': Colors.teal
+    },
+    {
+      'name': 'Equipment Repairing',
+      'icon':
+      'https://hospirent.in/public//storage/icons/services/equipment%20repairing.png',
+      'color': Colors.teal
+    },
+    {
+      'name': 'Sleep Study',
+      'icon':
+      'https://hospirent.in/public//storage/icons/services/sleepstudy.png',
+      'color': Colors.teal
+    },
   ];
 
-  // // Sample services
-  // final List<Map<String, dynamic>> services = [
-  //   {'name': 'Repair', 'description': 'Fix your devices quickly', 'icon': Icons.build, 'semanticsLabel': 'Repair'},
-  //   {'name': 'Delivery', 'description': 'Fast and reliable delivery', 'icon': Icons.local_shipping, 'semanticsLabel': 'Delivery'},
-  //   {'name': 'Consulting', 'description': 'Expert advice for you', 'icon': Icons.support_agent, 'semanticsLabel': 'Consulting'},
-  // ];
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-      backgroundColor: AppColors.backgroud,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 5.h),
-              // Enhanced Banner Slider
-              _buildBannerSlider(),
-              SizedBox(height: 10.h),
-              // Category Section
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8.w),
-                child: Text(
-                  'Explore Categories',
-                  style: TextStyle(
-                    fontSize: 22.sp,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                    letterSpacing: 0.5,
-                  ),
-                ).animate().fadeIn(duration: 600.ms, curve: Curves.easeInOut),
-              ),
-              SizedBox(height: 12.h),
-              _buildCategoryGrid(),
-              SizedBox(height: 10.h),
-              // Service Section
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.w),
-                child: Text(
-                  'Our Services',
-                  style: TextStyle(
-                    fontSize: 22.sp,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                    letterSpacing: 0.5,
-                  ),
-                ).animate().fadeIn(duration: 600.ms, curve: Curves.easeInOut),
-              ),
-              SizedBox(height: 12.h),
-              _buildServiceGrid(),
-              SizedBox(height: 24.h),
-            ],
+      backgroundColor: Colors.grey[50],
+      body: CustomScrollView(
+        controller: _scrollController,
+        slivers: [
+          SliverToBoxAdapter(
+            child: _buildBannerSlider().animate().fadeIn(duration: 500.ms),
           ),
-        ),
+
+          // Categories Section
+          SliverPadding(
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+            sliver: SliverToBoxAdapter(
+              child: _buildSectionTitle('Explore Categories'),
+            ),
+          ),
+          SliverPadding(
+            padding: EdgeInsets.symmetric(horizontal: 12.w),
+            sliver: SliverGrid(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                crossAxisSpacing: 8.w,
+                mainAxisSpacing: 8.h,
+                childAspectRatio: 0.85,
+              ),
+              delegate: SliverChildBuilderDelegate(
+                    (context, index) => _buildCategoryItem(index),
+                childCount: categories.length,
+              ),
+            ),
+          ),
+
+          // Services Section
+          SliverPadding(
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+            sliver: SliverToBoxAdapter(
+              child: _buildSectionTitle('Our Services'),
+            ),
+          ),
+          SliverPadding(
+            padding: EdgeInsets.symmetric(horizontal: 12.w),
+            sliver: SliverGrid(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                crossAxisSpacing: 8.w,
+                mainAxisSpacing: 8.h,
+                childAspectRatio: 0.85,
+              ),
+              delegate: SliverChildBuilderDelegate(
+                    (context, index) => _buildServiceItem(index),
+                childCount: services.length,
+              ),
+            ),
+          ),
+          SliverToBoxAdapter(child: SizedBox(height: 30.h)),
+        ],
       ),
     );
   }
 
+  Widget _buildSectionTitle(String title) {
+    return Text(
+      title,
+      style: TextStyle(
+        fontSize: 20.sp,
+        fontWeight: FontWeight.bold,
+        color: Colors.blue[900],
+      ),
+    ).animate().slideX(
+      begin: -0.2,
+      end: 0,
+      duration: 500.ms,
+      curve: Curves.easeOutCubic,
+    );
+  }
+
   Widget _buildBannerSlider() {
-    return Stack(
+    return Column(
       children: [
-        CarouselSlider(
+        SizedBox(height: 3.h),
+
+        CarouselSlider.builder(
+          itemCount: bannerImages.length,
           options: CarouselOptions(
-            height: 120.h, // Increased height for prominence
+            height: 120.h,
             autoPlay: true,
             enlargeCenterPage: true,
             aspectRatio: 16 / 9,
-            autoPlayInterval: const Duration(seconds: 3),
-            viewportFraction: 1, // Slightly smaller for side peek
+            autoPlayInterval: 5.seconds,
+            viewportFraction: 0.99,
             onPageChanged: (index, reason) {
-              setState(() {
-                _currentIndex = index;
-              });
+              setState(() => _currentIndex = index);
             },
           ),
-          items: bannerImages.map((banner) {
-            return Builder(
-              builder: (BuildContext context) {
-                return GestureDetector(
-                  onTap: () {
-                    // Add navigation or action for banner tap
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Tapped ${banner['title']}')),
-                    );
-                  },
-                  child: Container(
-                    margin: EdgeInsets.symmetric(horizontal: 1.w),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20.r),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
+          itemBuilder: (context, index, realIndex) {
+            return Container(
+              margin: EdgeInsets.symmetric(horizontal: 0.w),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16.r),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 10,
+                    spreadRadius: 2,
+                    offset: Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10.r),
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    CachedNetworkImage(
+                      imageUrl: bannerImages[index]['url']!,
+                      fit: BoxFit.fill,
+                      placeholder: (context, url) => Center(
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation(Colors.blue[200]!),
                         ),
-                      ],
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20.r),
-                      child: Stack(
-                        fit: StackFit.expand,
-                        children: [
-                          CachedNetworkImage(
-                            imageUrl: banner['url']!,
-                            fit: BoxFit.fill,
-                            placeholder: (context, url) => Center(
-                              child: CircularProgressIndicator(
-                                valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
-                              ),
-                            ),
-                            errorWidget: (context, url, error) => Icon(
-                              Icons.error,
-                              size: 50.sp,
-                              color: AppColors.accent,
-                              semanticLabel: 'Image load error',
-                            ),
-                          ),
-                          // Gradient overlay for text readability
-                          Container(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [Colors.black.withOpacity(0.4), Colors.transparent],
-                                begin: Alignment.bottomCenter,
-                                end: Alignment.topCenter,
-                              ),
-                            ),
-                          ),
-
-                        ],
+                      ),
+                      errorWidget: (context, url, error) => Icon(
+                        Icons.broken_image,
+                        size: 40.sp,
+                        color: Colors.grey[300],
                       ),
                     ),
-                  ),
-                ).animate().fadeIn(duration: 800.ms, curve: Curves.easeInOut);
-              },
+                    // Container(
+                    //   decoration: BoxDecoration(
+                    //     gradient: LinearGradient(
+                    //       begin: Alignment.bottomCenter,
+                    //       end: Alignment.topCenter,
+                    //       colors: [
+                    //         Colors.black.withOpacity(0.6),
+                    //         Colors.transparent,
+                    //       ],
+                    //     ),
+                    //   ),
+                    // ),
+                    // Positioned(
+                    //   bottom: 16.h,
+                    //   left: 16.w,
+                    //   child: Text(
+                    //     bannerImages[index]['title']!,
+                    //     style: TextStyle(
+                    //       fontSize: 18.sp,
+                    //       fontWeight: FontWeight.bold,
+                    //       color: Colors.white,
+                    //       shadows: [
+                    //         Shadow(
+                    //           blurRadius: 6.0,
+                    //           color: Colors.black,
+                    //           offset: Offset(2.0, 2.0),
+                    //         ),
+                    //       ],
+                    //     ),
+                    //   ),
+                    // ),
+                  ],
+                ),
+              ),
             );
-          }).toList(),
+          },
         ),
-        // Dot Indicators
-        Positioned(
-          bottom: 8.h,
-          left: 0,
-          right: 0,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: bannerImages.asMap().entries.map((entry) {
-              return GestureDetector(
-                onTap: () => setState(() => _currentIndex = entry.key),
-                child: Container(
-                  width: _currentIndex == entry.key ? 12.w : 8.w,
-                  height: 8.h,
-                  margin: EdgeInsets.symmetric(horizontal: 4.w),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: _currentIndex == entry.key ? AppColors.primary : Colors.white.withOpacity(0.5),
-                  ),
-                ).animate().scale(duration: 400.ms, curve: Curves.easeInOut),
-              );
-            }).toList(),
+        SizedBox(height: 8.h),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(
+            bannerImages.length,
+                (index) => AnimatedContainer(
+              duration: 300.ms,
+              width: _currentIndex == index ? 24.w : 8.w,
+              height: 8.h,
+              margin: EdgeInsets.symmetric(horizontal: 4.w),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(4.r),
+                color: _currentIndex == index
+                    ? Colors.blue[800]
+                    : Colors.grey[400],
+              ),
+            ),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildCategoryGrid() {
-    const crossAxisCount = 3; // Number of columns
-    const crossAxisSpacing = 5.0; // Horizontal spacing between items
-    const mainAxisSpacing = 5.0; // Vertical spacing between items
-    const childAspectRatio = 0.85; // Width-to-height ratio of each item
+  Widget _buildCategoryItem(int index) {
+    return InkWell(
+      onTap: () {
+        Navigator.push(context, MaterialPageRoute(builder: (_) => Home()));
 
-    // Calculate number of rows
-    final int rowCount = (categories.length / crossAxisCount).ceil();
-
-    // Calculate item width based on screen width
-    final double screenWidth = MediaQuery.of(context).size.width;
-    final double itemWidth = (screenWidth - (2 * 8.w) - (crossAxisCount - 1) * crossAxisSpacing.w) / crossAxisCount;
-
-    // Calculate item height based on aspect ratio
-    final double itemHeight = itemWidth / childAspectRatio;
-
-    // Calculate total height: (item height * number of rows) + (spacing between rows) + padding
-    final double totalHeight = (itemHeight * rowCount) + (mainAxisSpacing.h * (rowCount - 1)) + (2 * 12.h);
-
-    return Padding(
-      padding:  EdgeInsets.all(5.sp),
-      child: GridView.builder(
-        physics: const NeverScrollableScrollPhysics(),
-        shrinkWrap: true,
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: crossAxisCount,
-          crossAxisSpacing: crossAxisSpacing,
-          mainAxisSpacing: mainAxisSpacing,
-          childAspectRatio: childAspectRatio,
+        // Handle category tap
+        // _showSnackBar('Selected: ${categories[index]['name']}');
+      },
+      borderRadius: BorderRadius.circular(16.r),
+      child: Card(
+        elevation: 2,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16.r),
         ),
-        itemCount: categories.length,
-        itemBuilder: (context, index) {
-          return GestureDetector(
-            onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (_) => const Home()));
-
-            },
-            child: Card(
-              elevation: 0,
-              color: AppColors.cardBackground,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16.r),
-                  gradient: LinearGradient(
-                    colors: [
-                      categories[index]['color'].withOpacity(0.1),
-                      Colors.white,
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16.r),
+            gradient: LinearGradient(
+              colors: [
+                categories[index]['color'].withOpacity(0.1),
+                Colors.white,
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+          child: Padding(
+            padding: EdgeInsets.all(8.sp),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 60.sp,
+                  height: 60.sp,
+                  padding: EdgeInsets.all(12.sp),
+                  decoration: BoxDecoration(
+                    color: categories[index]['color'].withOpacity(0.2),
+                    shape: BoxShape.circle,
                   ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
+                  child: CachedNetworkImage(
+                    imageUrl: categories[index]['icon'],
+                    fit: BoxFit.contain,
+                    placeholder: (context, url) => Center(
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation(
+                            categories[index]['color']),
+                      ),
                     ),
-                  ],
-                ),
-                child: Padding(
-                  padding:  EdgeInsets.all(1.sp),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        height: 60.sp,
-                        child: Image.network(
-                          categories[index]['icon'],
-                          // size: 48.sp,
-                          // color: categories[index]['color'],
-                          semanticLabel: categories[index]['semanticsLabel'],
-                        ).animate().scale(duration: 300.ms, curve: Curves.easeInOut),
-                      ),
-                      SizedBox(height: 8.h),
-                      Text(
-                        categories[index]['name'],
-                        style: TextStyle(
-                          fontSize: 13.sp,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black87,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ).animate().slideY(
-              begin: 0.3,
-              end: 0.0,
-              duration: 600.ms,
-              delay: (100 * index).ms,
-              curve: Curves.easeOut,
-            ).fadeIn(duration: 600.ms),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildServiceGrid() {
-    const crossAxisCount = 3; // Number of columns
-    const crossAxisSpacing = 5.0; // Horizontal spacing between items
-    const mainAxisSpacing = 5.0; // Vertical spacing between items
-    const childAspectRatio = 0.85; // Width-to-height ratio of each item
-
-    // Calculate number of rows
-    final int rowCount = (categories.length / crossAxisCount).ceil();
-
-    // Calculate item width based on screen width
-    final double screenWidth = MediaQuery.of(context).size.width;
-    final double itemWidth = (screenWidth - (2 * 8.w) - (crossAxisCount - 1) * crossAxisSpacing.w) / crossAxisCount;
-
-    // Calculate item height based on aspect ratio
-    final double itemHeight = itemWidth / childAspectRatio;
-
-    // Calculate total height: (item height * number of rows) + (spacing between rows) + padding
-    final double totalHeight = (itemHeight * rowCount) + (mainAxisSpacing.h * (rowCount - 1)) + (2 * 12.h);
-
-    return Padding(
-      padding:  EdgeInsets.all(5.sp),
-      child: GridView.builder(
-        physics: const NeverScrollableScrollPhysics(),
-        shrinkWrap: true,
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: crossAxisCount,
-          crossAxisSpacing: crossAxisSpacing,
-          mainAxisSpacing: mainAxisSpacing,
-          childAspectRatio: childAspectRatio,
-        ),
-        itemCount: services.length,
-        itemBuilder: (context, index) {
-          return GestureDetector(
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Tapped ${services[index]['name']}')),
-              );
-            },
-            child: Card(
-              elevation: 0,
-              color: AppColors.cardBackground,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: HexColor('#68b1e8'),
-                  borderRadius: BorderRadius.circular(16.r),
-                  // gradient: LinearGradient(
-                  //   colors: [
-                  //     services[index]['color'].withOpacity(0.1),
-                  //     Colors.white,
-                  //   ],
-                  //   begin: Alignment.topLeft,
-                  //   end: Alignment.bottomRight,
-                  // ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
+                    errorWidget: (context, url, error) => Icon(
+                      Icons.error_outline,
+                      color: categories[index]['color'],
                     ),
-                  ],
-                ),
-                child: Padding(
-                  padding:  EdgeInsets.all(1.sp),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        height: 60.sp,
-                        child: Image.network(
-                          services[index]['icon'],
-                          // size: 48.sp,
-                          // color: categories[index]['color'],
-                          semanticLabel: services[index]['semanticsLabel'],
-                        ).animate().scale(duration: 300.ms, curve: Curves.easeInOut),
-                      ),
-                      SizedBox(height: 8.h),
-                      Text(
-                        services[index]['name'],
-                        style: TextStyle(
-                          fontSize: 13.sp,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black87,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
                   ),
                 ),
-              ),
-            ).animate().slideY(
-              begin: 0.3,
-              end: 0.0,
-              duration: 600.ms,
-              delay: (100 * index).ms,
-              curve: Curves.easeOut,
-            ).fadeIn(duration: 600.ms),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildServiceList() {
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: services.length,
-      itemBuilder: (context, index) {
-        return GestureDetector(
-          onTap: () {
-            // Add navigation
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Tapped ${services[index]['name']}')),
-            );
-          },
-          child: Container(
-            margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-            decoration: BoxDecoration(
-              color: AppColors.cardBackground,
-              borderRadius: BorderRadius.circular(16.r),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 8,
-                  offset: const Offset(0, 4),
+                SizedBox(height: 8.h),
+                Text(
+                  categories[index]['name'],
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.grey[800],
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
-            child: ListTile(
-              contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-              leading: CircleAvatar(
-                radius: 24.r,
-                backgroundColor: AppColors.primary.withOpacity(0.1),
-                child: Icon(
-                  services[index]['icon'],
-                  color: AppColors.primary,
-                  size: 28.sp,
-                  semanticLabel: services[index]['semanticsLabel'],
-                ),
-              ),
-              title: Text(
-                services[index]['name'],
-                style: TextStyle(
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-              subtitle: Text(
-                services[index]['description'],
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  color: Colors.grey.shade600,
-                ),
-              ),
-            ),
-          ).animate().slideX(
-            begin: 0.2,
-            end: 0.0,
-            duration: 600.ms,
-            delay: (100 * index).ms,
-            curve: Curves.easeOut,
-          ).fadeIn(duration: 600.ms),
-        );
+          ),
+        ),
+      ).animate().scaleXY(
+        begin: 0.8,
+        end: 1,
+        duration: 500.ms,
+        delay: (100 * index).ms,
+        curve: Curves.easeOutBack,
+      ),
+    );
+  }
+
+  Widget _buildServiceItem(int index) {
+    return InkWell(
+      onTap: () {
+        // Handle service tap
+        _showSnackBar('Selected: ${services[index]['name']}');
       },
+      borderRadius: BorderRadius.circular(16.r),
+      child: Card(
+        elevation: 2,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16.r),
+        ),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16.r),
+            color: HexColor('#68b1e8').withOpacity(0.1),
+          ),
+          child: Padding(
+            padding: EdgeInsets.all(8.sp),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 60.sp,
+                  height: 60.sp,
+                  padding: EdgeInsets.all(12.sp),
+                  decoration: BoxDecoration(
+                    color: services[index]['color'].withOpacity(0.2),
+                    shape: BoxShape.circle,
+                  ),
+                  child: CachedNetworkImage(
+                    imageUrl: services[index]['icon'],
+                    fit: BoxFit.contain,
+                    placeholder: (context, url) => Center(
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor:
+                        AlwaysStoppedAnimation(services[index]['color']),
+                      ),
+                    ),
+                    errorWidget: (context, url, error) => Icon(
+                      Icons.error_outline,
+                      color: services[index]['color'],
+                    ),
+                  ),
+                ),
+                SizedBox(height: 8.h),
+                Text(
+                  services[index]['name'],
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.grey[800],
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ).animate().slideY(
+        begin: 0.5,
+        end: 0,
+        duration: 500.ms,
+        delay: (50 * index).ms,
+        curve: Curves.easeOutQuad,
+      ),
+    );
+  }
+
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.r),
+        ),
+      ),
     );
   }
 }

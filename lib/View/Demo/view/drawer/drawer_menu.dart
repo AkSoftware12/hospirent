@@ -1,16 +1,14 @@
 
 import 'package:hospirent/constants.dart';
-
 import '../../const/raw_string.dart';
 import '../../imports.dart';
-import '../../utils/url_launch.dart';
-import '../../widgets/app_name_widget.dart';
+import '../../utils/url_launch.dart';import '../../widgets/app_name_widget.dart';
 import '../../widgets/text/text_builder.dart';
 import '../cart/cart.dart';
 import '../home/home.dart';
 
 class DrawerMenu extends StatefulWidget {
-  const DrawerMenu({Key? key}) : super(key: key);
+  const DrawerMenu({super.key});
 
   @override
   // ignore: library_private_types_in_public_api
@@ -67,7 +65,7 @@ class _DrawerMenuState extends State<DrawerMenu> {
                         ),
                         ListTile(
                           onTap: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (_) => const Cart()));
+                            Navigator.push(context, MaterialPageRoute(builder: (_) => const Cart(appBar: 'Hone',)));
                           },
                           leading: const Icon(
                             Icons.shopping_bag,

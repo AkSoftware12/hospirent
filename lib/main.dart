@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:hospirent/View/Profile/profile.dart';
 import 'package:hospirent/constants.dart';
 import 'package:provider/provider.dart';
 import 'View/Auth/Login/login.dart';
+import 'View/Blogs/blogs.dart';
 import 'View/Cart/cart.dart';
 import 'View/Demo/controller/cart_provider.dart';
 import 'View/Demo/view/cart/cart.dart';
@@ -11,6 +14,7 @@ import 'View/Demo/widgets/app_name_widget.dart';
 import 'View/Demo/widgets/text/text_builder.dart';
 import 'View/Home/home.dart';
 import 'View/Product/product.dart';
+import 'View/Videos/video.dart';
 import 'Widget/drawer.dart';
 
 void main() {
@@ -87,8 +91,11 @@ class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
   final List<Widget> _screens = [
     HomeScreen(),
-    ProductScreen(),
-    CartScreen(),
+    BlogsScreen(),
+    VideoScreen(),
+    Cart(appBar: '',),
+    ProfileScreen(),
+
   ];
 
   void _onItemTapped(int index) {
@@ -105,7 +112,7 @@ class _MainScreenState extends State<MainScreen> {
       appBar:AppBar(
         backgroundColor: AppColors.primary,
         iconTheme: IconThemeData(color: Colors.white),
-        title: const AppNameWidget(),
+        title:  AppNameWidget(),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
             bottomLeft: Radius.circular(20.sp),
@@ -115,7 +122,7 @@ class _MainScreenState extends State<MainScreen> {
         actions: [
           IconButton(
             onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (_) => const Cart()));
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const Cart(appBar: 'Hone',)));
             },
             icon: Stack(
               children: [
@@ -154,16 +161,58 @@ class _MainScreenState extends State<MainScreen> {
 
       drawer: const DrawerMenu(),
       body: _screens[_selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.shop), label: 'Products'),
-          BottomNavigationBarItem(icon: Icon(Icons.shopping_cart), label: 'Cart'),
-        ],
-        backgroundColor: AppColors.primary,
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
+      bottomNavigationBar:Container(
+        decoration: BoxDecoration(
+          color: Colors.transparent,
+        ),
+        child: ClipRRect(
+          // borderRadius: BorderRadius.only(
+          //   topLeft: Radius.circular(20.sp),
+          //   topRight: Radius.circular(20.sp),
+          // ),
+          child: BottomNavigationBar(
+            items:  [
+              BottomNavigationBarItem(
+                icon: Icon(Icons.home),
+                label: 'Home',
+              ),
+              BottomNavigationBarItem(
+                icon: FaIcon(FontAwesomeIcons.blog),
+                label: 'Blogs',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.play_circle),
+                label: 'Gallery',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.shopping_cart),
+                label: 'Cart',
+              ),
+              BottomNavigationBarItem(
+                icon: FaIcon(FontAwesomeIcons.user),
+                label: 'Profile',
+              ),
+            ],
+            backgroundColor: AppColors.primary, // Your primary color
+            currentIndex: _selectedIndex,
+            onTap: _onItemTapped,
+            selectedItemColor: Colors.white, // Color for selected item
+            unselectedItemColor: Colors.white70, // Color for unselected items
+            type: BottomNavigationBarType.fixed, // Ensures consistent layout
+            selectedLabelStyle: TextStyle(
+              fontSize: 12.sp,
+              fontWeight: FontWeight.w600,
+            ),
+            unselectedLabelStyle: TextStyle(
+              fontSize: 11.sp,
+              fontWeight: FontWeight.w400,
+            ),
+            elevation: 8, // Adds shadow for depth
+            iconSize: 20.sp, // Responsive icon size
+          ),
+        ),
       ),
+
     );
   }
 }

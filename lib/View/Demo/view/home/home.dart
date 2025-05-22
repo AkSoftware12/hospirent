@@ -73,7 +73,7 @@ class _HomeState extends State<Home> {
         actions: [
           IconButton(
             onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (_) => const Cart()));
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const Cart(appBar: 'Hone',)));
             },
             icon: Stack(
               children: [
