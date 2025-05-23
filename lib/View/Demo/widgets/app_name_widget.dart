@@ -1,4 +1,5 @@
 
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hospirent/View/Demo/const/app_colors.dart';
 import 'package:hospirent/View/Demo/widgets/text/text_builder.dart';
 
@@ -12,8 +13,8 @@ class AppNameWidget extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        TextBuilder(text: 'Hos', color: Colors.white, fontSize: 30, fontWeight: FontWeight.w700),
-        TextBuilder(text: 'Pirent', color:  Colors.white, fontSize: 30,fontWeight: FontWeight.w700),
+        TextBuilder(text: 'Hospi ', color: Colors.white, fontSize: 20.sp, fontWeight: FontWeight.w700),
+        TextBuilder(text: 'Rent', color:  Colors.white, fontSize: 20.sp,fontWeight: FontWeight.w700),
       ],
     );
   }

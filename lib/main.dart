@@ -6,16 +6,13 @@ import 'package:hospirent/constants.dart';
 import 'package:provider/provider.dart';
 import 'View/Auth/Login/login.dart';
 import 'View/Blogs/blogs.dart';
-import 'View/Cart/cart.dart';
 import 'View/Demo/controller/cart_provider.dart';
 import 'View/Demo/view/cart/cart.dart';
 import 'View/Demo/view/drawer/drawer_menu.dart';
 import 'View/Demo/widgets/app_name_widget.dart';
 import 'View/Demo/widgets/text/text_builder.dart';
 import 'View/Home/home.dart';
-import 'View/Product/product.dart';
 import 'View/Videos/video.dart';
-import 'Widget/drawer.dart';
 
 void main() {
   runApp(MyApp());
@@ -103,6 +100,8 @@ class _MainScreenState extends State<MainScreen> {
       _selectedIndex = index;
     });
   }
+
+
 
   @override
   Widget build(BuildContext context) {
