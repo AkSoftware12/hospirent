@@ -20,7 +20,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
     if (success) {
       final redirectRoute = authProvider.redirectRoute ?? '/';
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => MainScreen()));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => MainScreen(initialIndex: 0,)));
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Login failed: Invalid credentials')),

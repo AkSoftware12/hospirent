@@ -35,6 +35,24 @@ class _CartState extends State<Cart> {
             bottomRight: Radius.circular(20.sp),
           ),
         ),
+        leading: Builder(
+          builder: (context) => Padding(
+            padding: EdgeInsets.all(8.0), // Adjust padding as needed
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white24, // Set grey background for drawer icon
+                shape: BoxShape.circle, // Optional: makes the background circular
+              ),
+              child: IconButton(
+                icon: Icon(Icons.menu, color: Colors.white), // Drawer icon
+                onPressed: () {
+                  Scaffold.of(context).openDrawer(); // Opens the drawer
+                },
+              ),
+            ),
+          ),
+        ),
+
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 20),
@@ -90,7 +108,7 @@ class _CartState extends State<Cart> {
                     borderRadius: BorderRadius.circular(12.sp),
                   ),
                   onPressed: () {
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) =>  MainScreen()));
+                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) =>  MainScreen(initialIndex: 0,)));
 
                   },
                   child: TextBuilder(

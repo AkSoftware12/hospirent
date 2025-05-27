@@ -7,6 +7,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:hospirent/HexColor.dart';
 
 import '../Demo/view/home/home.dart';
+import 'Services/services.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -419,8 +420,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildServiceItem(int index) {
     return InkWell(
       onTap: () {
-        // Handle service tap
-        _showSnackBar('Selected: ${services[index]['name']}');
+        Navigator.push(context, MaterialPageRoute(builder: (_) => XRayAtHomeScreen()));
       },
       borderRadius: BorderRadius.circular(16.r),
       child: Card(

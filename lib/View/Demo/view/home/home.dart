@@ -70,6 +70,24 @@ class _HomeState extends State<Home> {
             bottomRight: Radius.circular(20.sp),
           ),
         ),
+        leading: Builder(
+          builder: (context) => Padding(
+            padding: EdgeInsets.all(8.0), // Adjust padding as needed
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white24, // Set grey background for drawer icon
+                shape: BoxShape.circle, // Optional: makes the background circular
+              ),
+              child: IconButton(
+                icon: Icon(Icons.menu, color: Colors.white), // Drawer icon
+                onPressed: () {
+                  Scaffold.of(context).openDrawer(); // Opens the drawer
+                },
+              ),
+            ),
+          ),
+        ),
+
         actions: [
           IconButton(
             onPressed: () {

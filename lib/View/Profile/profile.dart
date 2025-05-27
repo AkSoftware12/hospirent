@@ -5,10 +5,17 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hospirent/constants.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:provider/provider.dart';
+import '../Demo/controller/cart_provider.dart';
+import '../Demo/view/drawer/drawer_menu.dart';
+import '../Demo/widgets/app_name_widget.dart';
+import '../Demo/widgets/text/text_builder.dart';
 import 'MyOrders/my_orders/my_orders.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+  final String appBar;
+
+  const ProfileScreen({super.key, required this.appBar});
 
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
@@ -79,9 +86,60 @@ class _ProfileScreenState extends State<ProfileScreen>
     print("ProfileScreen build called");
     final theme = Theme.of(context);
     final screenSize = MediaQuery.of(context).size;
-
+    final cart = Provider.of<CartProvider>(context);
+    Size size = MediaQuery.sizeOf(context);
     return Scaffold(
       backgroundColor: AppColors.backgroud,
+      appBar: widget.appBar != ''
+          ? AppBar(
+        backgroundColor: AppColors.primary,
+        iconTheme: const IconThemeData(color: Colors.white),
+        title: const AppNameWidget(),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(20.sp),
+            bottomRight: Radius.circular(20.sp),
+          ),
+        ),
+        leading: Builder(
+          builder: (context) => Padding(
+            padding: EdgeInsets.all(8.0), // Adjust padding as needed
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white24, // Set grey background for drawer icon
+                shape: BoxShape.circle, // Optional: makes the background circular
+              ),
+              child: IconButton(
+                icon: Icon(Icons.menu, color: Colors.white), // Drawer icon
+                onPressed: () {
+                  Scaffold.of(context).openDrawer(); // Opens the drawer
+                },
+              ),
+            ),
+          ),
+        ),
+
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 20),
+            child: Container(
+              height: 25,
+              width: 25,
+              alignment: Alignment.center,
+              decoration: const BoxDecoration(
+                  shape: BoxShape.circle, color: Colors.black),
+              child: TextBuilder(
+                text: cart.itemCount.toString(),
+                color: Colors.white,
+                fontWeight: FontWeight.w500,
+                fontSize: 10,
+              ),
+            ),
+          ),
+        ],
+      )
+          : null,
+      drawer: const DrawerMenu(),
       body: Column(
         children: [
           // Header section

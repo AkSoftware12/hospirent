@@ -65,6 +65,36 @@ class _VideoScreenState extends State<VideoScreen> with SingleTickerProviderStat
       date: DateTime(2025, 5, 15),
       description: "Creating smooth UI animations.",
     ),
+    Video(
+      title: "Medical Service at Home",
+      imageUrl: "https://hospirent.in/public//storage/photos/videos/hospirent%20thmbnail.png",
+      date: DateTime(2025, 5, 20),
+      description: "A deep dive into AI advancements.",
+    ),
+    Video(
+      title: "Home Medical Equipment Setup",
+      imageUrl: "https://hospirent.in/public//storage/photos/videos/WhatsApp%20Image%202023-10-27%20at%2019.38.45.jpeg",
+      date: DateTime(2025, 5, 18),
+      description: "Best practices for Flutter apps.",
+    ),
+    Video(
+      title: "Nursing Staff for Patient Homecare",
+      imageUrl: "https://hospirent.in/public//storage/photos/videos/Nursing%20Staff%20for%20Patient%20Homecare.png",
+      date: DateTime(2025, 5, 15),
+      description: "Creating smooth UI animations.",
+    ),
+    Video(
+      title: "Rental Hospital Equipment",
+      imageUrl: "https://hospirent.in/public//storage/photos/videos/5%20jan.png",
+      date: DateTime(2025, 5, 15),
+      description: "Creating smooth UI animations.",
+    ),
+    Video(
+      title: "Medical Equipment Supplier in Dehradun",
+      imageUrl: "https://hospirent.in/public//storage/photos/videos/ytVideo1Img.png",
+      date: DateTime(2025, 5, 15),
+      description: "Creating smooth UI animations.",
+    ),
   ];
 
   @override
@@ -90,14 +120,24 @@ class _VideoScreenState extends State<VideoScreen> with SingleTickerProviderStat
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.backgroud,
-      body: FadeTransition(
-        opacity: _fadeAnimation,
-        child: ListView.builder(
-          padding:  EdgeInsets.all(0.sp),
-          itemCount: videos.length,
-          itemBuilder: (context, index) {
-            return VideoCard(video: videos[index], index: index);
-          },
+      body: SingleChildScrollView(
+        child: FadeTransition(
+          opacity: _fadeAnimation,
+          child: GridView.builder(
+            shrinkWrap: true, // Makes GridView take only the space it needs
+            physics:  NeverScrollableScrollPhysics(), // Disable GridView scrolling
+            padding: EdgeInsets.all(3.sp),
+            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+              maxCrossAxisExtent: 200.sp, // Maximum width for each item
+              crossAxisSpacing: 0.sp,
+              mainAxisSpacing: 0.sp,
+              mainAxisExtent: 200.sp, // Explicit height for each grid item
+            ),
+            itemCount: videos.length,
+            itemBuilder: (context, index) {
+              return VideoCard(video: videos[index], index: index);
+            },
+          ),
         ),
       ),
     );
@@ -150,65 +190,69 @@ class _VideoCardState extends State<VideoCard> with SingleTickerProviderStateMix
       child: ScaleTransition(
         scale: _scaleAnimation,
         child: Padding(
-          padding: EdgeInsets.all(8.sp),
+          padding: EdgeInsets.all(0.sp),
           child: Card(
             elevation: 6,
             color: AppColors.backgroud,
-            margin: EdgeInsets.symmetric(vertical: 5.sp),
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16.0),
+              borderRadius: BorderRadius.circular(5.0),
             ),
             child: InkWell(
               onTap: () {
                 // Navigate to Video details or handle tap
               },
-              borderRadius: BorderRadius.circular(16.0),
+              borderRadius: BorderRadius.circular(5.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   ClipRRect(
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(16.0)),
+                    borderRadius: const BorderRadius.vertical(top: Radius.circular(5.0)),
                     child: CachedNetworkImage(
                       imageUrl: widget.video.imageUrl,
-                      height: 150.sp,
+                      height: 120.sp, // Reduced height
                       width: double.infinity,
-                      fit: BoxFit.cover,
+                      fit: BoxFit.fill,
                       placeholder: (context, url) => Container(
-                        height: 150.sp,
+                        height: 120.sp,
                         color: Colors.grey[300],
-                        child:Center(
-                          child:  CupertinoActivityIndicator(radius: 20,color: AppColors.primary,),// Show progress bar here
+                        child: Center(
+                          child: CupertinoActivityIndicator(radius: 20, color: AppColors.primary),
                         ),
                       ),
                       errorWidget: (context, url, error) => Container(
-                        height: 150.sp,
+                        height: 120.sp,
                         color: Colors.grey[300],
                         child: const Icon(Icons.error, color: Colors.red),
                       ),
-                      memCacheHeight: 200, // Cache resized image
+                      memCacheHeight: 200,
                       memCacheWidth: (MediaQuery.of(context).size.width * 0.8).toInt(),
-                      fadeInDuration: const Duration(milliseconds: 300), // Fast fade-in
+                      fadeInDuration: const Duration(milliseconds: 300),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          widget.video.title,
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.all(6.sp), // Reduced padding
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.video.title,
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                        ),
-                        const SizedBox(height: 8.0),
-                        Text(
-                          DateFormat('MMM dd, yyyy').format(widget.video.date),
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Colors.grey[600],
+                          SizedBox(height: 2.sp), // Reduced spacing
+                          Text(
+                            DateFormat('MMM dd, yyyy').format(widget.video.date),
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: Colors.grey[600],
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ],

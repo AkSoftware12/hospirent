@@ -2,11 +2,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:hospirent/constants.dart';
 import 'package:intl/intl.dart';
 
-
-
+import '../../constants.dart';
 
 class Blog {
   final String title;
@@ -58,6 +56,30 @@ class _BlogsScreenState extends State<BlogsScreen> with SingleTickerProviderStat
       date: DateTime(2025, 5, 15),
       description: "Creating smooth UI animations.",
     ),
+    Blog(
+      title: "Top 5 Essential Medical Equipment Every Home Should Have!",
+      imageUrl: "https://hospirent.in/public//storage/photos/blogs/Why%20Home-Based.png",
+      date: DateTime(2025, 5, 20),
+      description: "A deep dive into AI advancements.",
+    ),
+    Blog(
+      title: "A Comprehensive Guide to Using Oxygen concentrator in Healthcare",
+      imageUrl: "https://hospirent.in/public//storage/photos/blogs/3%20jan%20hospirent%201.png",
+      date: DateTime(2025, 5, 18),
+      description: "Best practices for Flutter apps.",
+    ),
+    Blog(
+      title: "Choosing the Right Wheelchair: A Comprehensive Guide",
+      imageUrl: "https://hospirent.in/public//storage/photos/blogs/4jan%20hospirent%20.png",
+      date: DateTime(2025, 5, 15),
+      description: "Creating smooth UI animations.",
+    ),
+    Blog(
+      title: "Why Home-Based Medical Services are on the Rise",
+      imageUrl: "https://hospirent.in/public//storage/photos/blogs/3%20jan%20wabsite.png",
+      date: DateTime(2025, 5, 15),
+      description: "Creating smooth UI animations.",
+    ),
   ];
 
   @override
@@ -82,15 +104,25 @@ class _BlogsScreenState extends State<BlogsScreen> with SingleTickerProviderStat
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroud,
-      body: FadeTransition(
-        opacity: _fadeAnimation,
-        child: ListView.builder(
-          padding:  EdgeInsets.all(0.sp),
-          itemCount: blogs.length,
-          itemBuilder: (context, index) {
-            return BlogCard(blog: blogs[index], index: index);
-          },
+      backgroundColor: AppColors.backgroud, // Ensure AppColors.background is defined
+      body: SingleChildScrollView(
+        child: FadeTransition(
+          opacity: _fadeAnimation,
+          child: GridView.builder(
+            shrinkWrap: true, // Makes GridView take only the space it needs
+            physics: const NeverScrollableScrollPhysics(), // Disable GridView scrolling
+            padding: EdgeInsets.all(3.sp),
+            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+              maxCrossAxisExtent: 200.sp, // Maximum width for each item
+              crossAxisSpacing: 0.sp,
+              mainAxisSpacing: 0.sp,
+              mainAxisExtent: 200.sp, // Explicit height for each grid item
+            ),
+            itemCount: blogs.length,
+            itemBuilder: (context, index) {
+              return BlogCard(blog: blogs[index], index: index);
+            },
+          ),
         ),
       ),
     );
@@ -141,78 +173,70 @@ class _BlogCardState extends State<BlogCard> with SingleTickerProviderStateMixin
       position: _slideAnimation,
       child: ScaleTransition(
         scale: _scaleAnimation,
-        child: Padding(
-          padding:  EdgeInsets.all(8.sp),
-          child: Card(
-            elevation: 6,
-            color: AppColors.backgroud,
-            margin:  EdgeInsets.symmetric(vertical: 5.sp),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16.0),
-            ),
-            child: InkWell(
-              onTap: () {
-                // Navigate to blog details or handle tap
-              },
-              borderRadius: BorderRadius.circular(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ClipRRect(
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(16.0)),
-                    child: CachedNetworkImage(
-                      imageUrl: widget.blog.imageUrl,
-                      height: 150.sp,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) => Container(
-                        height: 150.sp,
-                        color: Colors.grey[300],
-                        child:Center(
-                          child:  CupertinoActivityIndicator(radius: 20,color: AppColors.primary,),// Show progress bar here
-                        ),
+        child: Card(
+          elevation: 6,
+          color: AppColors.backgroud, // Ensure AppColors.background is defined
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(5.0),
+          ),
+          child: InkWell(
+            onTap: () {
+              // Navigate to blog details or handle tap
+            },
+            borderRadius: BorderRadius.circular(5.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ClipRRect(
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(5.0)),
+                  child: CachedNetworkImage(
+                    imageUrl: widget.blog.imageUrl,
+                    height: 120.sp,
+                    width: double.infinity,
+                    fit: BoxFit.fill,
+                    placeholder: (context, url) => Container(
+                      height: 120.sp,
+                      color: Colors.grey[300],
+                      child: Center(
+                        child: CupertinoActivityIndicator(radius: 20, color: AppColors.primary),
                       ),
-                      errorWidget: (context, url, error) => Container(
-                        height: 150.sp,
-                        color: Colors.grey[300],
-                        child: const Icon(Icons.error, color: Colors.red),
-                      ),
-                      memCacheHeight: 200, // Cache resized image
-                      memCacheWidth: (MediaQuery.of(context).size.width * 0.8).toInt(),
-                      fadeInDuration: const Duration(milliseconds: 300), // Fast fade-in
                     ),
+                    errorWidget: (context, url, error) => Container(
+                      height: 120.sp,
+                      color: Colors.grey[300],
+                      child: const Icon(Icons.error, color: Colors.red),
+                    ),
+                    memCacheHeight: 200,
+                    memCacheWidth: (MediaQuery.of(context).size.width * 0.8).toInt(),
+                    fadeInDuration: const Duration(milliseconds: 300),
                   ),
-
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.all(8.sp),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           widget.blog.title,
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        const SizedBox(height: 8.0),
+                        SizedBox(height: 4.sp),
                         Text(
                           DateFormat('MMM dd, yyyy').format(widget.blog.date),
                           style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: Colors.grey[600],
                           ),
                         ),
-                        // const SizedBox(height: 8.0),
-                        // Text(
-                        //   widget.blog.description,
-                        //   style: Theme.of(context).textTheme.bodyMedium,
-                        //   maxLines: 2,
-                        //   overflow: TextOverflow.ellipsis,
-                        // ),
                       ],
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),

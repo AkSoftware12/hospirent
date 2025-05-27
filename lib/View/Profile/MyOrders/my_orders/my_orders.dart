@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -425,13 +426,32 @@ class _MyOrdersState extends State<MyOrders> with SingleTickerProviderStateMixin
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     // Menu icon
-                    IconButton(
-                      icon: Icon(Icons.menu, color: Colors.white),
-                      onPressed: () {
-                        _scaffoldKey.currentState?.openDrawer();
 
-                      },
+                   Builder(
+                      builder: (context) => Padding(
+                        padding: EdgeInsets.all(8.0), // Adjust padding as needed
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white24, // Set grey background for drawer icon
+                            shape: BoxShape.circle, // Optional: makes the background circular
+                          ),
+                          child: IconButton(
+                            icon: Icon(Icons.menu, color: Colors.white), // Drawer icon
+                            onPressed: () {
+                              Scaffold.of(context).openDrawer(); // Opens the drawer
+                            },
+                          ),
+                        ),
+                      ),
                     ),
+
+                    // IconButton(
+                    //   icon: Icon(Icons.menu, color: Colors.white),
+                    //   onPressed: () {
+                    //     _scaffoldKey.currentState?.openDrawer();
+                    //
+                    //   },
+                    // ),
 
                     // Title
                     AppNameWidget(),

@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
             title: 'Shopping App',
             theme: ThemeData(primarySwatch: Colors.blue),
             debugShowCheckedModeBanner: false,
-            home: MainScreen(),
+            home: MainScreen(initialIndex: 0,),
             routes: {
               '/login': (context) => LoginScreen(),
             },
@@ -80,6 +80,10 @@ class AuthProvider with ChangeNotifier {
 }
 
 class MainScreen extends StatefulWidget {
+  final int initialIndex;
+
+  const MainScreen({super.key, required this.initialIndex});
+
   @override
   _MainScreenState createState() => _MainScreenState();
 }
@@ -91,7 +95,7 @@ class _MainScreenState extends State<MainScreen> {
     BlogsScreen(),
     VideoScreen(),
     Cart(appBar: '',),
-    ProfileScreen(),
+    ProfileScreen(appBar: '',),
 
   ];
 
@@ -100,7 +104,12 @@ class _MainScreenState extends State<MainScreen> {
       _selectedIndex = index;
     });
   }
+@override
+  void initState() {
+    super.initState();
+    _selectedIndex = widget.initialIndex; // Set the initial tab index
 
+}
 
 
   @override
@@ -108,20 +117,37 @@ class _MainScreenState extends State<MainScreen> {
     final cart = Provider.of<CartProvider>(context);
 
     return Scaffold(
-      appBar:AppBar(
+      appBar: AppBar(
         backgroundColor: AppColors.primary,
         iconTheme: IconThemeData(color: Colors.white),
-        title:  AppNameWidget(),
+        title: AppNameWidget(),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
             bottomLeft: Radius.circular(20.sp),
             bottomRight: Radius.circular(20.sp),
           ),
         ),
+        leading: Builder(
+          builder: (context) => Padding(
+            padding: EdgeInsets.all(8.0), // Adjust padding as needed
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white24, // Set grey background for drawer icon
+                shape: BoxShape.circle, // Optional: makes the background circular
+              ),
+              child: IconButton(
+                icon: Icon(Icons.menu, color: Colors.white), // Drawer icon
+                onPressed: () {
+                  Scaffold.of(context).openDrawer(); // Opens the drawer
+                },
+              ),
+            ),
+          ),
+        ),
         actions: [
           IconButton(
             onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (_) => const Cart(appBar: 'Hone',)));
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const Cart(appBar: 'Hone')));
             },
             icon: Stack(
               children: [
@@ -154,9 +180,7 @@ class _MainScreenState extends State<MainScreen> {
             ),
           )
         ],
-
       ),
-
 
       drawer: const DrawerMenu(),
       body: _screens[_selectedIndex],
