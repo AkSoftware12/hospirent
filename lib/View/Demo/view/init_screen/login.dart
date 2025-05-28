@@ -60,7 +60,7 @@ class _LoginState extends State<Login> {
                   minWidth: size.width * 0.8,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   onPressed: () {
-                    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => const Home()), (route) => false);
+                    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => const Home(id: 0,)), (route) => false);
                   },
                   child: const TextBuilder(
                     text: 'Login',

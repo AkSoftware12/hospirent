@@ -1,3 +1,4 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hospirent/constants.dart';
 import '../../../../main.dart';
 import '../../../DrawerScreen/ContactUs.dart';
@@ -240,7 +241,7 @@ class _DrawerMenuState extends State<DrawerMenu> {
       leading: Icon(icon, color: Colors.white),
       title: TextBuilder(
         text: label,
-        fontSize: 18.0,
+        fontSize: 15.sp,
         fontWeight: FontWeight.w500,
         color: Colors.white,
       ),

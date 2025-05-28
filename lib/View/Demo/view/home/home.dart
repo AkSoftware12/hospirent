@@ -1,7 +1,11 @@
+import 'dart:convert';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hospirent/constants.dart';
 import 'package:http/http.dart' as http;
-
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../controller/cart_provider.dart';
 import '../../imports.dart';
 import '../../model/product_model.dart';
@@ -12,31 +16,36 @@ import '../cart/cart.dart';
 import '../drawer/drawer_menu.dart';
 
 class Home extends StatefulWidget {
-  const Home({Key? key}) : super(key: key);
+  final int id;
+  const Home({Key? key, required this.id}) : super(key: key);
+
   @override
-  // ignore: library_private_types_in_public_api
   _HomeState createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   Future<List<ProductModel>>? futureProduct;
+  List categories = []; // Declare a list to hold API data
+  List services = []; // Declare a list to hold API data
+  List banner = []; // Declare a list to hold API data
+  bool isLoading = true;
+
   Future<List<ProductModel>> fetchProducts() async {
     List<ProductModel> products = [];
-    const baseUrl = 'https://fakestoreapi.com/products';
-    var request = http.Request('GET', Uri.parse(baseUrl));
+    var request = http.Request('GET', Uri.parse('${ApiRoutes.getAllProducts}${widget.id}'));
 
     http.StreamedResponse response = await request.send();
-    var responseBody = await response.stream.bytesToString(); // Store the response body
+    var responseBody = await response.stream.bytesToString();
 
     if (response.statusCode == 200) {
       if (kDebugMode) {
         print(responseBody);
       }
       final jsonData = jsonDecode(responseBody);
-      products = jsonData.map<ProductModel>((e) => ProductModel.fromJson(e)).toList();
-      setState(() {}); // Assuming this is within a Stateful widget
-
+      final productList = jsonData['products'] as List<dynamic>;
+      products = productList.map<ProductModel>((e) => ProductModel.fromJson(e)).toList();
+      setState(() {});
       return products;
     } else {
       if (kDebugMode) {
@@ -53,6 +62,8 @@ class _HomeState extends State<Home> {
     WidgetsBinding.instance.addPostFrameCallback((_) {});
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     final cart = Provider.of<CartProvider>(context);
@@ -60,9 +71,9 @@ class _HomeState extends State<Home> {
       key: _scaffoldKey,
       backgroundColor: AppColors.backgroud,
       drawer: const DrawerMenu(),
-      appBar:AppBar(
+      appBar: AppBar(
         backgroundColor: AppColors.primary,
-        iconTheme: IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Colors.white),
         title: const AppNameWidget(),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
@@ -72,26 +83,25 @@ class _HomeState extends State<Home> {
         ),
         leading: Builder(
           builder: (context) => Padding(
-            padding: EdgeInsets.all(8.0), // Adjust padding as needed
+            padding: EdgeInsets.all(8.0),
             child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white24, // Set grey background for drawer icon
-                shape: BoxShape.circle, // Optional: makes the background circular
+              decoration: const BoxDecoration(
+                color: Colors.white24,
+                shape: BoxShape.circle,
               ),
               child: IconButton(
-                icon: Icon(Icons.menu, color: Colors.white), // Drawer icon
+                icon: const Icon(Icons.menu, color: Colors.white),
                 onPressed: () {
-                  Scaffold.of(context).openDrawer(); // Opens the drawer
+                  _scaffoldKey.currentState?.openDrawer();
                 },
               ),
             ),
           ),
         ),
-
         actions: [
           IconButton(
             onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (_) => const Cart(appBar: 'Hone',)));
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const Cart(appBar: 'Hone')));
             },
             icon: Stack(
               children: [
@@ -124,21 +134,19 @@ class _HomeState extends State<Home> {
             ),
           )
         ],
-
       ),
-
       body: SafeArea(
         child: FutureBuilder<List<ProductModel>>(
           future: futureProduct,
           builder: (context, data) {
             if (data.hasData) {
               return GridView.builder(
-                padding: const EdgeInsets.all(15),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                padding: const EdgeInsets.all(10),
+                gridDelegate:  SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                   childAspectRatio: 2.5 / 4,
-                  mainAxisSpacing: 15,
-                  crossAxisSpacing: 15,
+                  mainAxisSpacing: 5.sp,
+                  crossAxisSpacing: 5.sp,
                 ),
                 itemCount: data.data!.length,
                 shrinkWrap: true,
@@ -148,9 +156,20 @@ class _HomeState extends State<Home> {
                 },
               );
             } else if (data.hasError) {
-              return Text("${data.error}");
+              return Center(
+                child: TextBuilder(
+                  text: "Failed to load products. Please try again.",
+                  fontSize: 16.sp,
+                  color: Colors.red,
+                ),
+              );
             }
-            return const Center(child: CircularProgressIndicator());
+            return Center(
+              child: CupertinoActivityIndicator(
+                radius: 30,
+                color: AppColors.primary,
+              ), // Show progress bar here
+            );
           },
         ),
       ),
