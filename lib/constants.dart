@@ -4,6 +4,7 @@ import 'HexColor.dart';
 
 class AppColors {
   static  Color primary = HexColor('#034da2'); // Example primary color (blue)
+  // static  Color primary = HexColor('#60669e'); // Example primary color (blue)
   static  Color backgroud  = HexColor('#eef1f6'); // Example primary color (blue)
   static const Color grey = Color(0xFFAAAEB2); // Secondary color (gray)
   static const Color error = Color(0xFFDC3545); // Error color (red)

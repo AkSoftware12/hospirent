@@ -1,9 +1,14 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hospirent/constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../../../HexColor.dart';
 import '../../../../main.dart';
 import '../../../DrawerScreen/ContactUs.dart';
 import '../../../DrawerScreen/privacy.dart';
 import '../../../DrawerScreen/terms.dart';
+import '../../../Home/Services/services.dart';
 import '../../../Profile/profile.dart';
 import '../../const/raw_string.dart';
 import '../../imports.dart';
@@ -12,6 +17,7 @@ import '../../widgets/app_name_widget.dart';
 import '../../widgets/text/text_builder.dart';
 import '../cart/cart.dart';
 import '../home/home.dart';
+import 'package:http/http.dart' as http;
 
 class DrawerMenu extends StatefulWidget {
   const DrawerMenu({super.key});
@@ -21,6 +27,66 @@ class DrawerMenu extends StatefulWidget {
 }
 
 class _DrawerMenuState extends State<DrawerMenu> {
+  List<dynamic> categories = []; // Declare a list to hold API data
+  List<dynamic> product = []; // Declare a list to hold API data
+  List<dynamic> services = []; // Declare a list to hold API data
+  List<dynamic> banner = []; // Declare a list to hold API data
+  bool isLoading = true;
+
+
+  @override
+  void initState() {
+    super.initState();
+    fetchDasboardData();
+
+  }
+
+
+  Future<void> fetchDasboardData() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+      print("Token: $token");
+
+
+      final response = await http.get(
+        Uri.parse(ApiRoutes.getDashboard),
+        headers: {'Authorization': 'Bearer $token'},
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+
+        // Verify that data is a Map and contains the expected keys
+        if (data is Map<String, dynamic>) {
+          setState(() {
+            // Use null-aware operators or provide default values
+            categories = data['categories'] is List ? data['categories'] : [];
+            services = data['services'] is List ? data['services'] : [];
+            banner = data['banner'] ?? []; // Adjust based on expected type of banner
+            isLoading = false;
+
+            print("Categories: $categories");
+            print("Services: $services");
+            print("Banner: $banner");
+          });
+        } else {
+          print("Error: Invalid response format");
+        }
+      } else {
+        print("Error: Failed to fetch data, status code: ${response.statusCode}");
+        // Optionally call _showLoginDialog() if status code is 401 (Unauthorized)
+        if (response.statusCode == 401) {
+        }
+      }
+    } catch (e) {
+      print("Error fetching dashboard data: $e");
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -70,27 +136,69 @@ class _DrawerMenuState extends State<DrawerMenu> {
               child: ListView(
                 padding: EdgeInsets.zero,
                 children: [
+                  SizedBox(height: 10.sp,),
                   _drawerItem(
                       icon: Icons.dashboard,
                       label: 'Dashboard',
                       onTap: () {
-                        Navigator.pop(context);
-                      }),
-                  _drawerItem(
-                      icon: Icons.article,
-                      label: 'Blogs',
-                      onTap: () {
-                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => MainScreen(initialIndex: 1,)));
-
+                        // Navigator.pop(context);
+                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => MainScreen(initialIndex: 0,)));
 
                       }),
-                  _drawerItem(
-                      icon: Icons.photo_library,
-                      label: 'Gallery',
-                      onTap: () {
-                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => MainScreen(initialIndex: 2,)));
+                  // _drawerItem(
+                  //     icon: Icons.production_quantity_limits,
+                  //     label: 'All Product',
+                  //     onTap: () {
+                  //
+                  //         Navigator.push(context, MaterialPageRoute(builder: (_) => Home(id: 0,)));
+                  //
+                  //
+                  //
+                  //     }),
 
-                      }),
+                  CustomExpansionTile(
+                    icon: Icons.category,
+                    text: 'Products',
+                    height: 30.sp, // custom height of collapsed tile
+                    children: [
+                      Container(
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          itemCount: categories.length,
+                          itemBuilder: (context, index) {
+                            return _buildCategorySubItem(context,
+                                categories[index]['title'].toString(),
+                                categories[index]['photo_url'].toString(),
+                                categories[index]['id'],
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+
+
+
+                  CustomExpansionTile(
+                    icon: Icons.info_outline,
+                    text: 'Services',
+                    height: 30.sp, // custom height of collapsed tile
+                    children: [
+                      Container(
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          itemCount: services.length,
+                          itemBuilder: (context, index) {
+                            return _buildSubItem(context, services[index]['title'].toString(),services[index]['icon_url'].toString());
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+
+
                   _drawerItem(
                       icon: Icons.shopping_cart,
                       label: 'Cart',
@@ -111,6 +219,24 @@ class _DrawerMenuState extends State<DrawerMenu> {
                     //     MaterialPageRoute(
                     //         builder: (_) => const ProfileScreen(appBar: 'Profile')));
                   }),
+
+
+                  _drawerItem(
+                      icon: Icons.article,
+                      label: 'Blogs',
+                      onTap: () {
+                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => MainScreen(initialIndex: 1,)));
+
+
+                      }),
+                  _drawerItem(
+                      icon: Icons.photo_library,
+                      label: 'Gallery',
+                      onTap: () {
+                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => MainScreen(initialIndex: 2,)));
+
+                      }),
+
                   _drawerItem(
                       icon: Icons.description,
                       label: 'Terms & Conditions',
@@ -237,17 +363,306 @@ class _DrawerMenuState extends State<DrawerMenu> {
       {required IconData icon,
       required String label,
       required VoidCallback onTap}) {
-    return ListTile(
-      leading: Icon(icon, color: Colors.white),
-      title: TextBuilder(
-        text: label,
-        fontSize: 15.sp,
-        fontWeight: FontWeight.w500,
-        color: Colors.white,
-      ),
+    return GestureDetector(
       onTap: onTap,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-      horizontalTitleGap: 10,
+      child: Padding(
+        padding:  EdgeInsets.all(8.sp),
+        child: Padding(
+          padding:  EdgeInsets.symmetric(horizontal: 10,vertical: 0),
+          child: Row(
+            children: [
+              Icon(icon, color: Colors.white,size: 24.sp,),
+              SizedBox(width: 10.sp,),
+
+              Text(
+                label,
+                textAlign: TextAlign.start,
+                style: TextStyle(
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                  fontFamily: 'PoppinsSemiBold',
+                ),
+
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+
+            ],
+          ),
+        ),
+      ),
+    );
+
+  }
+
+
+
+  // Build the expansion item (no top/bottom lines)
+  Widget _buildExpansionItem({
+    required IconData icon,
+    required String text,
+    required List<Widget> children,
+  }) {
+    return ExpansionTile(
+      leading: Icon(
+        icon,
+        size: 24.sp,
+        color:Colors.white,
+      ),
+      title:   Text(
+        text,
+        textAlign: TextAlign.start,
+        style: TextStyle(
+          fontSize: 16.sp,
+          fontWeight: FontWeight.w600,
+          color: Colors.white,
+          fontFamily: 'PoppinsSemiBold',
+        ),
+
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+      childrenPadding: EdgeInsets.symmetric(horizontal: 0.w, vertical: 0.h),
+      expandedCrossAxisAlignment: CrossAxisAlignment.start,
+      iconColor: Colors.white,
+      collapsedIconColor: Colors.white, // color when collapsed
+
+      children: children,
+      // trailing: Icon(CupertinoIcons.chevron_down,
+      // size: 24.sp,
+      //   color:Colors.white,
+      // ),
+
+    );
+  }
+
+  // Build the sub-item (renders HTML content)
+  Widget _buildSubItem(BuildContext context, String content, String image) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 5.h),
+      child: Padding(
+        padding: EdgeInsets.only(left: 28.sp, bottom: 5.sp),
+        child: GestureDetector(
+          onTap: (){
+            Navigator.push(context, MaterialPageRoute(builder: (_) => XRayAtHomeScreen()));
+
+          },
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                width: 22.sp,
+                height: 22.sp,
+                padding: EdgeInsets.all(3.sp),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                ),
+                child: CachedNetworkImage(
+                  imageUrl: image,
+                  fit: BoxFit.contain,
+                  placeholder: (context, url) => Center(
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation(Colors.blue),
+                    ),
+                  ),
+                  errorWidget: (context, url, error) => Icon(
+                    Icons.error_outline,
+                    color: Colors.blue,
+                  ),
+                ),
+              ),
+              SizedBox(width: 8.sp),
+              Expanded(
+                child: Text(
+                  content,
+                  textAlign: TextAlign.start,
+                  style: TextStyle(
+                    fontSize: 15.sp,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                    fontFamily: 'PoppinsMedium',
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+  Widget _buildCategorySubItem(BuildContext context, String content, String image,int id) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 5.h),
+      child: Padding(
+        padding: EdgeInsets.only(left: 28.sp, bottom: 5.sp),
+        child: GestureDetector(
+          onTap: (){
+            Navigator.push(context, MaterialPageRoute(builder: (_) => Home(id: id,)));
+
+          },
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                width: 22.sp,
+                height: 22.sp,
+                padding: EdgeInsets.all(3.sp),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                ),
+                child: CachedNetworkImage(
+                  imageUrl: image,
+                  fit: BoxFit.contain,
+                  placeholder: (context, url) => Center(
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation(Colors.blue),
+                    ),
+                  ),
+                  errorWidget: (context, url, error) => Icon(
+                    Icons.error_outline,
+                    color: Colors.blue,
+                  ),
+                ),
+              ),
+              SizedBox(width: 8.sp),
+              Expanded(
+                child: Text(
+                  content,
+                  textAlign: TextAlign.start,
+                  style: TextStyle(
+                    fontSize: 15.sp,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                    fontFamily: 'PoppinsMedium',
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+}
+
+class CustomExpansionTile extends StatefulWidget {
+  final IconData icon;
+  final String text;
+  final List<Widget> children;
+  final double height;
+
+  const CustomExpansionTile({
+    Key? key,
+    required this.icon,
+    required this.text,
+    required this.children,
+    this.height = 60.0, // default collapsed height
+  }) : super(key: key);
+
+  @override
+  State<CustomExpansionTile> createState() => _CustomExpansionTileState();
+}
+
+class _CustomExpansionTileState extends State<CustomExpansionTile>
+    with SingleTickerProviderStateMixin {
+  bool _isExpanded = false;
+  late AnimationController _controller;
+  late Animation<double> _iconTurns;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller =
+        AnimationController(duration: const Duration(milliseconds: 300), vsync: this);
+    _iconTurns = Tween<double>(begin: 0.0, end: 0.5).animate(_controller);
+  }
+
+  void _handleTap() {
+    setState(() {
+      _isExpanded = !_isExpanded;
+      if (_isExpanded) {
+        _controller.forward();
+      } else {
+        _controller.reverse();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        GestureDetector(
+          onTap: _handleTap,
+          child: Container(
+            height: widget.height.h,
+            padding: EdgeInsets.symmetric(horizontal: 16.w),
+            decoration: BoxDecoration(
+              // color: Colors.black.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(10.r),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  widget.icon,
+                  color: Colors.white,
+                  size: 24.sp,
+                ),
+                SizedBox(width: 12.w),
+                Expanded(
+                  child: Text(
+                    widget.text,
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                      fontFamily: 'PoppinsSemiBold',
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                RotationTransition(
+                  turns: _iconTurns,
+                  child: Icon(
+                    Icons.expand_more,
+                    color: Colors.white,
+                    size: 24.sp,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        AnimatedCrossFade(
+          firstChild: Container(),
+          secondChild: Container(
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: widget.children,
+            ),
+          ),
+          crossFadeState: _isExpanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+          duration: const Duration(milliseconds: 300),
+        ),
+      ],
     );
   }
 }

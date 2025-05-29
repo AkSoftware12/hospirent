@@ -10,6 +10,7 @@ import 'package:hospirent/HexColor.dart';
 import 'package:hospirent/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:shimmer/shimmer.dart';
 
 import '../Demo/view/home/home.dart';
 import 'Services/services.dart';
@@ -66,12 +67,12 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
   final List<Map<String, dynamic>> topService = [
     {
-      'name': 'All \n Product',
+      'name': 'All\nProducts',
       'icon': 'assets/product.png',
       'color': Colors.blue
     },
     {
-      'name': 'All \n Service',
+      'name': 'All\nServices',
       'icon': 'assets/services.png',
       'color': Colors.pink
     },
@@ -321,9 +322,85 @@ class _HomeScreenState extends State<HomeScreen> {
 // Assuming _showLoginDialog is already defined elsewhere
   @override
   Widget build(BuildContext context) {
+
+    if (categories.isEmpty) {
+      return Scaffold(
+        backgroundColor: Colors.grey[200],
+        body: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Shimmer.fromColors(
+                baseColor: Colors.grey[300]!,
+                highlightColor: Colors.grey[100]!,
+                child: Container(
+                  width: double.infinity,
+                  height: 120.h,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16.r),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 10,
+                        spreadRadius: 2,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ShimmerCard(),
+                  ShimmerCard(),
+
+
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ShimmerCard(),
+                  ShimmerCard(),
+
+
+                ],
+              ),
+              SizedBox(height: 16),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Shimmer.fromColors(
+                  baseColor: Colors.grey[300]!,
+                  highlightColor: Colors.grey[100]!,
+                  child: Container(
+                    width: 150,
+                    height: 20,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              SizedBox(height: 8),
+              GridView.count(
+                crossAxisCount: 3,
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                padding: EdgeInsets.all(16),
+                crossAxisSpacing: 8.w,
+                mainAxisSpacing: 8.h,
+                childAspectRatio: 0.85,
+                children: List.generate(6, (index) => ShimmerGridCard()),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
       // backgroundColor:  HexColor('c6d7eb'),
-      backgroundColor:  AppColors.backgroud,
+      // backgroundColor:  AppColors.backgroud,
       body: isLoading
           ?  Center(
         child: CupertinoActivityIndicator(radius: 20,color: AppColors.primary,),
@@ -339,7 +416,7 @@ class _HomeScreenState extends State<HomeScreen> {
             padding: EdgeInsets.symmetric(horizontal: 1.w, vertical: 8.h),
             sliver: SliverToBoxAdapter(
               child: Card(
-                color: HexColor('192067').withOpacity(0.7),
+                color: HexColor('60669e'),
                 elevation: 4, // Adjust elevation for shadow
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12.r), // Rounded corners
@@ -380,10 +457,11 @@ class _HomeScreenState extends State<HomeScreen> {
             padding: EdgeInsets.symmetric(horizontal: 1.w, vertical: 0.h),
             sliver: SliverToBoxAdapter(
               child: Card(
-                color: HexColor('316879'),
+                // color: HexColor('316879').withOpacity(0.5),
+                // color: HexColor('628e9c'),
                 elevation: 4, // Adjust elevation for shadow
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12.r), // Rounded corners
+                  borderRadius: BorderRadius.circular(0.r), // Rounded corners
                 ),
                 child: Padding(
                   padding: EdgeInsets.all(2.w), // Inner padding for the card
@@ -1149,4 +1227,74 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+}
+
+
+class ShimmerCard extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
+      child: Card(
+        color: Colors.white,
+        elevation: 4,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        child: Container(
+          width: MediaQuery.of(context).size.width*0.45,
+          height: 80,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 30,
+                height: 30,
+                color: Colors.white,
+              ),
+              SizedBox(height: 4),
+              Container(
+                width: 60,
+                height: 12,
+                color: Colors.white,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class ShimmerGridCard extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
+      child: Card(
+        color: Colors.white,
+        elevation: 4,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        child: Container(
+          padding: EdgeInsets.all(8),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                color: Colors.white,
+              ),
+              SizedBox(height: 8),
+              Container(
+                width: 80,
+                height: 12,
+                color: Colors.white,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }

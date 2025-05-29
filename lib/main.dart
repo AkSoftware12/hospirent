@@ -118,8 +118,8 @@ class _MainScreenState extends State<MainScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AppColors.primary,
-        iconTheme: IconThemeData(color: Colors.white),
+        backgroundColor: Colors.white,
+        iconTheme: IconThemeData(color: Colors.black),
         title: AppNameWidget(),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
@@ -132,7 +132,7 @@ class _MainScreenState extends State<MainScreen> {
             padding: EdgeInsets.all(8.0), // Adjust padding as needed
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.white24, // Set grey background for drawer icon
+                color: Colors.black, // Set grey background for drawer icon
                 shape: BoxShape.circle, // Optional: makes the background circular
               ),
               child: IconButton(
@@ -155,7 +155,7 @@ class _MainScreenState extends State<MainScreen> {
                   padding: EdgeInsets.only(top: cart.itemCount != 0 ? 8 : 0, right: cart.itemCount != 0 ? 8 : 0),
                   child: const Icon(
                     Icons.shopping_cart,
-                    color: Colors.white,
+                    color: Colors.black,
                     size: 30,
                   ),
                 ),
